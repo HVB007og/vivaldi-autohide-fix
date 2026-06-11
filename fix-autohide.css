@@ -1,0 +1,73 @@
+/* 1. LAYER MANAGEMENT: Tabs must stay on top */
+#header {
+    position: relative !important;
+    z-index: 9999 !important;
+    background-color: var(--colorBg) !important;
+}
+
+/* 2. HOVER & CLICK FIX: Disable 'drag' on buttons/spacers so they don't block hover */
+/* This fixes the "dead zones" at the edges and on the Vivaldi button */
+#header,
+#header .vivaldi, 
+#header .window-buttongroup,
+#header .tabbar-wrapper,
+#header .toolbar,
+#tabs-container .tab-position,
+#tabs-container .tab-wrapper,
+.auto-hide-wrapper.top {
+    -webkit-app-region: no-drag !important;
+    pointer-events: auto !important;
+}
+
+/* 3. ADDRESS BAR: Hidden state */
+.auto-hide-wrapper.top {
+    position: absolute !important;
+    top: 31px !important; /* Matches your tab height */
+    left: 0;
+    right: 0;
+    z-index: 10 !important; /* Below tabs (9999), but above web page */
+    
+    /* Fully hide it by sliding it UP behind the header */
+    transform: translateY(-100%) !important; 
+    opacity: 0;
+    pointer-events: none;
+    -webkit-app-region: no-drag !important;
+    
+    /* Delay before hiding (0.6s) */
+    transition: transform 0.3s ease-in 0.6s, opacity 0.3s 0.6s, pointer-events 0s 0.9s !important; 
+}
+
+/* Reset internal Vivaldi margins that might cause "halfway" appearance */
+.auto-hide-wrapper.top .mainbar,
+.auto-hide-wrapper.top .toolbar-addressbar,
+.auto-hide-wrapper.top .toolbar-addressbar * {
+    transform: none !important;
+    margin-top: 0 !important;
+    -webkit-app-region: no-drag !important;
+}
+
+/* 4. THE MASTER TRIGGER: Slide down when hovering the header OR the bar itself */
+/* We use :has() on the #browser to coordinate the state */
+#browser:has(#header:hover) .auto-hide-wrapper.top,
+#browser:has(.auto-hide-wrapper.top:hover) .auto-hide-wrapper.top,
+.auto-hide-wrapper.top:focus-within {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    -webkit-app-region: no-drag !important;
+    
+    /* Instant slide down (0s delay) */
+    transition: transform 0.15s ease-out 0s, opacity 0.1s ease-out 0s, pointer-events 0s 0s !important;
+}
+
+/* 5. EXTRA HIT AREA: Ensure the very top edge of the screen triggers it */
+#header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    z-index: 10000;
+    -webkit-app-region: no-drag !important;
+}
